@@ -48,22 +48,22 @@
             hmacKey: String
         },
         listeners: {
-            down: '_onDown',
-            track: '_onTrack',
-            up: '_onUp'
+            down: '_down',
+            track: '_track',
+            up: '_up'
         },
-        _onDown: function(e) {
+        _down: function(e) {
             this._selectedRenderer.drawStart(e.detail.x - e.srcElement.offsetLeft, e.detail.y - e.srcElement.offsetTop, this.$.canvas.getContext('2d'));
             this._inkManager.startInkCapture(e.detail.x - e.srcElement.offsetLeft, e.detail.y - e.srcElement.offsetTop, e.timeStamp);
             this._isWriting = true;
         },
-        _onTrack: function(e) {
+        _track: function(e) {
             if (this._isWriting) {
                 this._selectedRenderer.drawContinue(e.detail.x - e.srcElement.offsetLeft, e.detail.y - e.srcElement.offsetTop, this.$.canvas.getContext('2d'));
                 this._inkManager.continueInkCapture(e.detail.x - e.srcElement.offsetLeft, e.detail.y - e.srcElement.offsetTop, e.timeStamp);
             }
         },
-        _onUp: function(e) {
+        _up: function(e) {
             if (this._isWriting) {
                 this._selectedRenderer.drawEnd(e.detail.x - e.srcElement.offsetLeft, e.detail.y - e.srcElement.offsetTop, this.$.canvas.getContext('2d'));
                 this._inkManager.endInkCapture(e.detail.x - e.srcElement.offsetLeft, e.detail.y - e.srcElement.offsetTop, e.timeStamp);
@@ -87,7 +87,7 @@
                 inputUnit.setComponents(components);
                 input = [inputUnit];
             } else {
-                input.concat(components);
+                input = input.concat(components);
             }
             this._selectedRecognizer.doSimpleRecognition(this.applicationKey, this._instanceId, input, this.hmacKey).then(
                     function success(data) {
@@ -102,9 +102,35 @@
             );
         },
         _drawRecognitionResult: function (input, result) {
-            this._selectedRenderer.drawRecognitionResult(input, result, this.$.canvas.getContext('2d'));
+            var data;
+            if (result instanceof MyScript.TextResult) {
+                data = result.getTextDocument();
+            } else if (result instanceof MyScript.MathResult) {
+                data = result.getMathDocument();
+            } else if (result instanceof MyScript.ShapeResult) {
+                data = result.getShapeDocument();
+            } else if (result instanceof MyScript.AnalyzerResult) {
+                data = result.getAnalyzerDocument();
+            } else if (result instanceof MyScript.MusicResult) {
+                data = result.getMusicDocument();
+            }
+            this._selectedRenderer.drawRecognitionResult(input, data, this.$.canvas.getContext('2d'));
         },
-        ready: function () {
+        attached: function () {
+            this._inkManager = new MyScript.InkManager();
+            // Renderers
+            this._textRenderer = new MyScript.TextRenderer();
+            this._mathRenderer = new MyScript.MathRenderer();
+            this._shapeRenderer = new MyScript.ShapeRenderer();
+            this._analyzerRenderer = new MyScript.AnalyzerRenderer();
+            this._musicRenderer = new MyScript.MusicRenderer();
+            // Recognizers
+            this._textRecognizer = new MyScript.TextRecognizer(this.url);
+            this._mathRecognizer = new MyScript.MathRecognizer(this.url);
+            this._shapeRecognizer = new MyScript.ShapeRecognizer(this.url);
+            this._analyzerRecognizer = new MyScript.AnalyzerRecognizer(this.url);
+            this._musicRecognizer = new MyScript.MusicRecognizer(this.url);
+            // Variables
             switch (this.type) {
                 case 'TEXT':
                     this._selectedRenderer = this._textRenderer;
@@ -129,31 +155,6 @@
                 default:
                     throw new Error('Unknown type: ' + this.type);
             }
-        },
-        attached: function () {
-            this._inkManager = new MyScript.InkManager();
-            // Renderers
-            this._textRenderer = new MyScript.TextRenderer();
-            this._mathRenderer = new MyScript.MathRenderer();
-            this._shapeRenderer = new MyScript.ShapeRenderer();
-            this._analyzerRenderer = new MyScript.AnalyzerRenderer();
-            this._musicRenderer = new MyScript.MusicRenderer();
-            // Recognizers
-            this._textRecognizer = new MyScript.TextRecognizer(this.url);
-            this._mathRecognizer = new MyScript.MathRecognizer(this.url);
-            this._shapeRecognizer = new MyScript.ShapeRecognizer(this.url);
-            this._analyzerRecognizer = new MyScript.AnalyzerRecognizer(this.url);
-            this._musicRecognizer = new MyScript.MusicRecognizer(this.url);
-            // Variables
-            this._instanceId = undefined;
-            this._selectedRenderer = this._textRenderer;
-            this._selectedRecognizer = this._textRecognizer;
-        },
-        detached: function () {
-            // The analog to `attached`, `detached` fires when the element has been
-            // removed from a document.
-            //
-            // Use this to clean up anything you did in `attached`.
         }
     });
 </script>

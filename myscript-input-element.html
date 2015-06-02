@@ -1,0 +1,66 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="../iron-icons/av-icons.html">
+<link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html">
+<link rel="import" href="../paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../myscript-core/myscript-core.html">
+
+<dom-module id="myscript-input-element">
+    <style>
+        :host {
+            background-color: yellow;
+            display: inline-block;
+        }
+
+        canvas {
+            background-color: lightsteelblue;
+            display: block;
+        }
+    </style>
+    <template>
+        <canvas id="canvas" width="{{width}}" height="{{height}}"></canvas>
+    </template>
+</dom-module>
+
+<script>
+    Polymer({
+        is: 'myscript-input-element',
+        properties: {
+            width: {
+                type: Number,
+                value: 300,
+                notify: true
+            },
+            height: {
+                type: Number,
+                value: 150,
+                notify: true
+            }
+        },
+        ready: function () {
+            // `ready` is called after all elements have been configured, but
+            // `ready` is called after all elements have been configured, but
+            // propagates bottom-up. This element's children are ready, but parents
+            // are not.
+            //
+            // This is the point where you should make modifications to the DOM (when
+            // necessary), or kick off any processes the element wants to perform.
+        },
+        attached: function () {
+            // `attached` fires once the element and its parents have been inserted
+            // into a document.
+            //
+            // This is a good place to perform any work related to your element's
+            // visual state or active behavior (measuring sizes, beginning animations,
+            // loading resources, etc).
+        },
+        detached: function () {
+            // The analog to `attached`, `detached` fires when the element has been
+            // removed from a document.
+            //
+            // Use this to clean up anything you did in `attached`.
+        }
+    });
+</script>

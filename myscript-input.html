@@ -36,14 +36,14 @@
                 value: 150,
                 notify: true
             },
-            url: {
-                type: String,
-                value: 'cloud.myscript.com'
-            },
             type: {
                 type: String,
                 value: 'TEXT'
             },
+            timeout: {
+                type: Number
+            },
+            url: String,
             applicationKey: String,
             hmacKey: String
         },
@@ -68,12 +68,41 @@
                 this._selectedRenderer.drawEnd(e.detail.x - e.srcElement.offsetLeft, e.detail.y - e.srcElement.offsetTop, this.$.canvas.getContext('2d'));
                 this._inkManager.endInkCapture(e.detail.x - e.srcElement.offsetLeft, e.detail.y - e.srcElement.offsetTop, e.timeStamp);
                 this._isWriting = undefined;
+                if (this.timeout != null) {
+                    this.debounce('timer', function () {
+                        this._doRecognition(this._inkManager.getStrokes())
+                    }, this.timeout);
+                }
             }
         },
         _clear: function() {
             this._instanceId = undefined;
             this._selectedRenderer.clear(this.$.canvas.getContext('2d'));
             this._inkManager.clear();
+        },
+        _doRecognition: function (components) {
+            var input = [];
+            if (this._selectedRecognizer instanceof MyScript.TextRecognizer) {
+                var inputUnit = new MyScript.TextInputUnit();
+                inputUnit.setComponents(components);
+                input = [inputUnit];
+            } else {
+                input.concat(components);
+            }
+            this._selectedRecognizer.doSimpleRecognition(this.applicationKey, this._instanceId, input, this.hmacKey).then(
+                    function success(data) {
+                        if (!this._instanceId) {
+                            this._instanceId = data.getInstanceId();
+                        } else if (this._instanceId !== data.getInstanceId()) {
+                            return;
+                        }
+                        this._selectedRenderer.clear(this.$.canvas.getContext('2d'));
+                        this._drawRecognitionResult(input, data);
+                    }.bind(this)
+            );
+        },
+        _drawRecognitionResult: function (input, result) {
+            this._selectedRenderer.drawRecognitionResult(input, result, this.$.canvas.getContext('2d'));
         },
         ready: function () {
             switch (this.type) {

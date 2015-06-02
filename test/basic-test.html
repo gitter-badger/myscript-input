@@ -8,15 +8,15 @@
         <script src="../../web-component-tester/browser.js"></script>
 
         <!-- Step 1: import the element to test -->
-        <link rel="import" href="../myscript-input-element.html">
+        <link rel="import" href="../myscript-input.html">
     </head>
     <body>
     <!-- You can use the document as a place to set up your fixtures. -->
-    <myscript-input-element></myscript-input-element>
+    <myscript-input></myscript-input>
     <script>
-        var myEl = document.querySelector('myscript-input-element');
+        var myEl = document.querySelector('myscript-input');
 
-        suite('<myscript-input-element>', function () {
+        suite('<myscript-input>', function () {
             test('Test', function () {
             });
         });

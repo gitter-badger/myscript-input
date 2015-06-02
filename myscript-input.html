@@ -1,0 +1,130 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="../iron-icons/av-icons.html">
+<link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html">
+<link rel="import" href="../paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../myscript-core/myscript-core.html">
+
+<dom-module id="myscript-input">
+    <style>
+        :host {
+            display: inline-block;
+        }
+        canvas {
+            background:url(background-pattern.png);
+            display: block;
+        }
+    </style>
+    <template>
+        <canvas id="canvas" width="{{width}}" height="{{height}}"></canvas>
+    </template>
+</dom-module>
+
+<script>
+    Polymer({
+        is: 'myscript-input',
+        properties: {
+            width: {
+                type: Number,
+                value: 300,
+                notify: true
+            },
+            height: {
+                type: Number,
+                value: 150,
+                notify: true
+            },
+            url: {
+                type: String,
+                value: 'cloud.myscript.com'
+            },
+            type: {
+                type: String,
+                value: 'TEXT'
+            },
+            applicationKey: String,
+            hmacKey: String
+        },
+        listeners: {
+            down: '_onDown',
+            track: '_onTrack',
+            up: '_onUp'
+        },
+        _onDown: function(e) {
+            this._selectedRenderer.drawStart(e.detail.x - e.srcElement.offsetLeft, e.detail.y - e.srcElement.offsetTop, this.$.canvas.getContext('2d'));
+            this._inkManager.startInkCapture(e.detail.x - e.srcElement.offsetLeft, e.detail.y - e.srcElement.offsetTop, e.timeStamp);
+            this._isWriting = true;
+        },
+        _onTrack: function(e) {
+            if (this._isWriting) {
+                this._selectedRenderer.drawContinue(e.detail.x - e.srcElement.offsetLeft, e.detail.y - e.srcElement.offsetTop, this.$.canvas.getContext('2d'));
+                this._inkManager.continueInkCapture(e.detail.x - e.srcElement.offsetLeft, e.detail.y - e.srcElement.offsetTop, e.timeStamp);
+            }
+        },
+        _onUp: function(e) {
+            if (this._isWriting) {
+                this._selectedRenderer.drawEnd(e.detail.x - e.srcElement.offsetLeft, e.detail.y - e.srcElement.offsetTop, this.$.canvas.getContext('2d'));
+                this._inkManager.endInkCapture(e.detail.x - e.srcElement.offsetLeft, e.detail.y - e.srcElement.offsetTop, e.timeStamp);
+                this._isWriting = undefined;
+            }
+        },
+        _clear: function() {
+            this._instanceId = undefined;
+            this._selectedRenderer.clear(this.$.canvas.getContext('2d'));
+            this._inkManager.clear();
+        },
+        ready: function () {
+            switch (this.type) {
+                case 'TEXT':
+                    this._selectedRenderer = this._textRenderer;
+                    this._selectedRecognizer = this._textRecognizer;
+                    break;
+                case 'MATH':
+                    this._selectedRenderer = this._mathRenderer;
+                    this._selectedRecognizer = this._mathRecognizer;
+                    break;
+                case 'SHAPE':
+                    this._selectedRenderer = this._shapeRenderer;
+                    this._selectedRecognizer = this._shapeRecognizer;
+                    break;
+                case 'ANALYZER':
+                    this._selectedRenderer = this._analyzerRenderer;
+                    this._selectedRecognizer = this._analyzerRecognizer;
+                    break;
+                case 'MUSIC':
+                    this._selectedRenderer = this._musicRenderer;
+                    this._selectedRecognizer = this._musicRecognizer;
+                    break;
+                default:
+                    throw new Error('Unknown type: ' + this.type);
+            }
+        },
+        attached: function () {
+            this._inkManager = new MyScript.InkManager();
+            // Renderers
+            this._textRenderer = new MyScript.TextRenderer();
+            this._mathRenderer = new MyScript.MathRenderer();
+            this._shapeRenderer = new MyScript.ShapeRenderer();
+            this._analyzerRenderer = new MyScript.AnalyzerRenderer();
+            this._musicRenderer = new MyScript.MusicRenderer();
+            // Recognizers
+            this._textRecognizer = new MyScript.TextRecognizer(this.url);
+            this._mathRecognizer = new MyScript.MathRecognizer(this.url);
+            this._shapeRecognizer = new MyScript.ShapeRecognizer(this.url);
+            this._analyzerRecognizer = new MyScript.AnalyzerRecognizer(this.url);
+            this._musicRecognizer = new MyScript.MusicRecognizer(this.url);
+            // Variables
+            this._instanceId = undefined;
+            this._selectedRenderer = this._textRenderer;
+            this._selectedRecognizer = this._textRecognizer;
+        },
+        detached: function () {
+            // The analog to `attached`, `detached` fires when the element has been
+            // removed from a document.
+            //
+            // Use this to clean up anything you did in `attached`.
+        }
+    });
+</script>

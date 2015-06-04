@@ -12,7 +12,7 @@ LICENSE: https://github.com/F2X/myscript-input/blob/master/LICENSE
 <link rel="import" href="../paper-fab/paper-fab.html">
 <link rel="import" href="../myscript-core/myscript-core.html">
 <!--
-`myscript-input` is an input element for the MyScript handwriting solution
+`myscript-input` is an input element for the MyScript Cloud handwriting solution
 ##### Example
     <myscript-input height="300" width="600" type="TEXT" application-key="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" hmac-key="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"></myscript-input>
 @element myscript-input
@@ -186,6 +186,9 @@ LICENSE: https://github.com/F2X/myscript-input/blob/master/LICENSE
                         }.bind(this)
                 );
             }
+        },
+        recognize: function () {
+            this._doRecognition(this._inkManager.getStrokes())
         },
         _drawRecognitionResult: function (input, result) {
             var data;

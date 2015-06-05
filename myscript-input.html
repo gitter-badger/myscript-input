@@ -25,6 +25,9 @@ LICENSE: https://github.com/F2X/myscript-input/blob/master/LICENSE
     <style>
         :host {
             display: inline-block;
+        }
+
+        #actions > ::content {
             --paper-fab-background: #00a7cf;
         }
 
@@ -39,9 +42,7 @@ LICENSE: https://github.com/F2X/myscript-input/blob/master/LICENSE
     </style>
     <template>
         <div id="actions">
-            <paper-fab id="clear" mini icon="delete" title="delete" on-click="_clear"></paper-fab>
-            <paper-fab id="undo" mini icon="undo" title="undo" on-click="_undo"></paper-fab>
-            <paper-fab id="redo" mini icon="redo" title="redo" on-click="_redo"></paper-fab>
+            <content></content>
         </div>
         <canvas id="canvas" width="{{width}}" height="{{height}}" on-down="_down" on-up="_up" on-track="_track"></canvas>
     </template>
@@ -134,12 +135,12 @@ LICENSE: https://github.com/F2X/myscript-input/blob/master/LICENSE
                 }
             }
         },
-        _clear: function () {
+        clear: function () {
             this._instanceId = undefined;
             this._selectedRenderer.clear(this.$.canvas.getContext('2d'));
             this._inkManager.clear();
         },
-        _undo: function () {
+        undo: function () {
             if (this.isDebouncerActive('timer')) {
                 this.cancelDebouncer('timer');
             }
@@ -152,7 +153,7 @@ LICENSE: https://github.com/F2X/myscript-input/blob/master/LICENSE
                 }, this.timeout);
             }
         },
-        _redo: function () {
+        redo: function () {
             if (this.isDebouncerActive('timer')) {
                 this.cancelDebouncer('timer');
             }

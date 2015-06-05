@@ -3,13 +3,6 @@ Copyright © François-Xavier Gentilhomme.
 LICENSE: https://github.com/F2X/myscript-input/blob/master/LICENSE
 -->
 <link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../iron-icons/iron-icons.html">
-<link rel="import" href="../iron-icons/av-icons.html">
-<link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html">
-<link rel="import" href="../paper-toolbar/paper-toolbar.html">
-<link rel="import" href="../paper-button/paper-button.html">
-<link rel="import" href="../paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../paper-fab/paper-fab.html">
 <link rel="import" href="../myscript-core/myscript-core.html">
 <!--
 `myscript-input` is an input element for the MyScript Cloud handwriting solution
@@ -27,23 +20,12 @@ LICENSE: https://github.com/F2X/myscript-input/blob/master/LICENSE
             display: inline-block;
         }
 
-        #actions > ::content {
-            --paper-fab-background: #00a7cf;
-        }
-
         canvas {
             background: url(background-pattern.png);
             display: block;
         }
-
-        #actions {
-            position: absolute;
-        }
     </style>
     <template>
-        <div id="actions">
-            <content></content>
-        </div>
         <canvas id="canvas" width="{{width}}" height="{{height}}" on-down="_down" on-up="_up" on-track="_track"></canvas>
     </template>
 </dom-module>
@@ -183,8 +165,12 @@ LICENSE: https://github.com/F2X/myscript-input/blob/master/LICENSE
                             } else if (this._instanceId !== data.getInstanceId()) {
                                 return;
                             }
+                            this.fire('recognized', data);
                             this._selectedRenderer.clear(this.$.canvas.getContext('2d'));
                             this._drawRecognitionResult(input, data);
+                        }.bind(this),
+                        function failure(data) {
+                            this.fire('error', data);
                         }.bind(this)
                 );
             }
@@ -192,22 +178,7 @@ LICENSE: https://github.com/F2X/myscript-input/blob/master/LICENSE
         recognize: function () {
             this._doRecognition(this._inkManager.getStrokes())
         },
-        _drawRecognitionResult: function (input, result) {
-            var data;
-            if (result instanceof MyScript.TextResult) {
-                data = result.getTextDocument();
-            } else if (result instanceof MyScript.MathResult) {
-                data = result.getMathDocument();
-            } else if (result instanceof MyScript.ShapeResult) {
-                data = result.getShapeDocument();
-            } else if (result instanceof MyScript.AnalyzerResult) {
-                data = result.getAnalyzerDocument();
-            } else if (result instanceof MyScript.MusicResult) {
-                data = result.getMusicDocument();
-            }
-            this._selectedRenderer.drawRecognitionResult(input, data, this.$.canvas.getContext('2d'));
-        },
-        _changeTypeSetting: function (type) {
+        changeType: function (type) {
             switch (type) {
                 case 'TEXT':
                     this._selectedRenderer = this._textRenderer;
@@ -233,6 +204,21 @@ LICENSE: https://github.com/F2X/myscript-input/blob/master/LICENSE
                     throw new Error('Unknown type: ' + type);
             }
         },
+        _drawRecognitionResult: function (input, result) {
+            var data;
+            if (result instanceof MyScript.TextResult) {
+                data = result.getTextDocument();
+            } else if (result instanceof MyScript.MathResult) {
+                data = result.getMathDocument();
+            } else if (result instanceof MyScript.ShapeResult) {
+                data = result.getShapeDocument();
+            } else if (result instanceof MyScript.AnalyzerResult) {
+                data = result.getAnalyzerDocument();
+            } else if (result instanceof MyScript.MusicResult) {
+                data = result.getMusicDocument();
+            }
+            this._selectedRenderer.drawRecognitionResult(input, data, this.$.canvas.getContext('2d'));
+        },
         attached: function () {
             this._inkManager = new MyScript.InkManager();
             // Renderers
@@ -248,7 +234,7 @@ LICENSE: https://github.com/F2X/myscript-input/blob/master/LICENSE
             this._analyzerRecognizer = new MyScript.AnalyzerRecognizer(this.url);
             this._musicRecognizer = new MyScript.MusicRecognizer(this.url);
             // Variables
-            this._changeTypeSetting(this.type);
+            this.changeType(this.type);
         }
     });
 </script>

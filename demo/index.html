@@ -5,24 +5,40 @@
         <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
         <title>myscript-input Demo</title>
         <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+        <link rel="import" href="../../iron-icons/iron-icons.html">
+        <link rel="import" href="../../iron-icons/av-icons.html">
+        <link rel="import" href="../../paper-fab/paper-fab.html">
+        <link rel="import" href="../../paper-toast/paper-toast.html">
         <link rel="import" href="../myscript-input.html">
     </head>
     <body>
+        <div style="position: absolute;">
+            <paper-fab id="clear" mini icon="delete" title="delete"></paper-fab>
+            <paper-fab id="undo" mini icon="undo" title="undo"></paper-fab>
+            <paper-fab id="redo" mini icon="redo" title="redo"></paper-fab>
+            <paper-fab id="recognize" mini icon="send" title="reco"></paper-fab>
+        </div>
         <myscript-input id="input" fancy height="300" width="600" type="TEXT" application-key="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" hmac-key="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
-            <paper-fab id="clear" mini icon="delete" title="delete" on-click="clear"></paper-fab>
-            <paper-fab id="undo" mini icon="undo" title="undo" on-click="undo"></paper-fab>
-            <paper-fab id="redo" mini icon="redo" title="redo" on-click="redo"></paper-fab>
         </myscript-input>
+        <paper-toast id="error" text="Recognition failed"></paper-toast>
         <script>
-            document.getElementById('clear').addEventListener('click', function() {
-                document.querySelector('myscript-input').clear();
-            });
-            document.getElementById('undo').addEventListener('click', function() {
-                document.querySelector('myscript-input').undo();
-            });
-            document.getElementById('redo').addEventListener('click', function() {
-                document.querySelector('myscript-input').redo();
-            });
+            (function (input, clear, undo, redo, recognize, error) {
+                clear.addEventListener('click', function() {
+                    input.clear();
+                });
+                undo.addEventListener('click', function() {
+                    input.undo();
+                });
+                redo.addEventListener('click', function() {
+                    input.redo();
+                });
+                recognize.addEventListener('click', function() {
+                    input.recognize();
+                });
+                input.addEventListener('error', function() {
+                    error.show();
+                });
+            })(document.getElementById('input'), document.getElementById('clear'), document.getElementById('undo'), document.getElementById('redo'), document.getElementById('recognize'), document.getElementById('error'));
         </script>
     </body>
 </html>

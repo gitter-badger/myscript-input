@@ -112,20 +112,20 @@ LICENSE: https://github.com/F2X/myscript-input/blob/master/LICENSE
             recognitionParameters: MyScript.AbstractParameter
         },
         _down: function (e) {
-            this._selectedRenderer.drawStart(e.detail.x - e.srcElement.offsetLeft, e.detail.y - e.srcElement.offsetTop, this.$.canvas.getContext('2d'));
-            this._inkManager.startInkCapture(e.detail.x - e.srcElement.offsetLeft, e.detail.y - e.srcElement.offsetTop, e.timeStamp);
+            this._selectedRenderer.drawStart(e.detail.sourceEvent.offsetX, e.detail.sourceEvent.offsetY, this.$.canvas.getContext('2d'));
+            this._inkManager.startInkCapture(e.detail.sourceEvent.offsetX, e.detail.sourceEvent.offsetY, e.timeStamp);
             this._isWriting = true;
         },
         _track: function (e) {
             if (this._isWriting) {
-                this._selectedRenderer.drawContinue(e.detail.x - e.srcElement.offsetLeft, e.detail.y - e.srcElement.offsetTop, this.$.canvas.getContext('2d'));
-                this._inkManager.continueInkCapture(e.detail.x - e.srcElement.offsetLeft, e.detail.y - e.srcElement.offsetTop, e.timeStamp);
+                this._selectedRenderer.drawContinue(e.detail.sourceEvent.offsetX, e.detail.sourceEvent.offsetY, this.$.canvas.getContext('2d'));
+                this._inkManager.continueInkCapture(e.detail.sourceEvent.offsetX, e.detail.sourceEvent.offsetY, e.timeStamp);
             }
         },
         _up: function (e) {
             if (this._isWriting) {
-                this._selectedRenderer.drawEnd(e.detail.x - e.srcElement.offsetLeft, e.detail.y - e.srcElement.offsetTop, this.$.canvas.getContext('2d'));
-                this._inkManager.endInkCapture(e.detail.x - e.srcElement.offsetLeft, e.detail.y - e.srcElement.offsetTop, e.timeStamp);
+                this._selectedRenderer.drawEnd(e.detail.sourceEvent.offsetX, e.detail.sourceEvent.offsetY, this.$.canvas.getContext('2d'));
+                this._inkManager.endInkCapture(e.detail.sourceEvent.offsetX, e.detail.sourceEvent.offsetY, e.timeStamp);
                 this._isWriting = undefined;
                 if (this.timeout != null) {
                     this.debounce('timer', function () {

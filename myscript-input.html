@@ -117,11 +117,29 @@ LICENSE: https://github.com/F2X/myscript-input/blob/master/LICENSE
                 }
             }
         },
+        /**
+         * Clear all context
+         *
+         * @method clear
+         * @param {String} instanceId Instance id of the current recognition session.
+         * @param {AbstractComponent[]} components Components array that contains strokes and others objects (chars, words, etc.)
+         * @param {AbstractParameter} parameters Parameters of recognition.
+         * @returns {QReturnValue} A promise with recognition result.
+         */
         clear: function () {
             this._instanceId = undefined;
             this._selectedRenderer.clear(this.$.canvas.getContext('2d'));
             this._inkManager.clear();
         },
+        /**
+         * Undo action, and launch recognition if timeout is set
+         *
+         * @method undo
+         * @param {String} instanceId Instance id of the current recognition session.
+         * @param {AbstractComponent[]} components Components array that contains strokes and others objects (chars, words, etc.)
+         * @param {AbstractParameter} parameters Parameters of recognition.
+         * @returns {QReturnValue} A promise with recognition result.
+         */
         undo: function () {
             if (this.isDebouncerActive('timer')) {
                 this.cancelDebouncer('timer');
@@ -135,6 +153,15 @@ LICENSE: https://github.com/F2X/myscript-input/blob/master/LICENSE
                 }, this.timeout);
             }
         },
+        /**
+         * Redo action, and launch recognition if timeout is set
+         *
+         * @method redo
+         * @param {String} instanceId Instance id of the current recognition session.
+         * @param {AbstractComponent[]} components Components array that contains strokes and others objects (chars, words, etc.)
+         * @param {AbstractParameter} parameters Parameters of recognition.
+         * @returns {QReturnValue} A promise with recognition result.
+         */
         redo: function () {
             if (this.isDebouncerActive('timer')) {
                 this.cancelDebouncer('timer');
@@ -175,6 +202,15 @@ LICENSE: https://github.com/F2X/myscript-input/blob/master/LICENSE
                 );
             }
         },
+        /**
+         * Llaunch recognition if timeout is set
+         *
+         * @method undo
+         * @param {String} instanceId Instance id of the current recognition session.
+         * @param {AbstractComponent[]} components Components array that contains strokes and others objects (chars, words, etc.)
+         * @param {AbstractParameter} parameters Parameters of recognition.
+         * @returns {QReturnValue} A promise with recognition result.
+         */
         recognize: function () {
             this._doRecognition(this._inkManager.getStrokes())
         },

@@ -67,32 +67,58 @@ LICENSE: https://github.com/F2X/myscript-input/blob/master/LICENSE
              */
             type: {
                 type: String,
-                value: 'TEXT'
+                value: 'TEXT',
+                observer: '_typeChanged'
             },
             /**
              * Recognition timeout
              *
              * @attribute timeout
-             * @type String
-             * @default 'TEXT'
+             * @type Number
              */
-            timeout: Number,
-            url: String,
+            timeout: {
+                type: Number
+            },
+            /**
+             * MyScript Cloud host name
+             *
+             * @attribute url
+             * @type String
+             */
+            url: {
+                type: String,
+                readOnly: true
+            },
             /**
              * MyScript Cloud application key
              *
              * @attribute application-key
              * @type String
              */
-            applicationKey: String,
+            applicationKey: {
+                type: String,
+                notify: true
+            },
             /**
              * MyScript Cloud HMAC key
              *
              * @attribute hmac-key
              * @type String
              */
-            hmacKey: String,
-            recognitionParameters: MyScript.AbstractParameter
+            hmacKey: {
+                type: String,
+                notify: true
+            },
+            /**
+             * Recognition parameters
+             *
+             * @attribute recognition-parameters
+             * @type MyScript.AbstractParameter
+             */
+            recognitionParameters: {
+                type: MyScript.AbstractParameter,
+                notify: true
+            }
         },
         _down: function (e) {
             this._selectedRenderer.drawStart(e.detail.sourceEvent.offsetX, e.detail.sourceEvent.offsetY, this.$.canvas.getContext('2d'));
@@ -214,7 +240,7 @@ LICENSE: https://github.com/F2X/myscript-input/blob/master/LICENSE
         recognize: function () {
             this._doRecognition(this._inkManager.getStrokes())
         },
-        changeType: function (type) {
+        _typeChanged: function (type) {
             switch (type) {
                 case 'TEXT':
                     this._selectedRenderer = this._textRenderer;
@@ -238,6 +264,12 @@ LICENSE: https://github.com/F2X/myscript-input/blob/master/LICENSE
                     break;
                 default:
                     throw new Error('Unknown type: ' + type);
+            }
+
+            if (this.timeout != null) {
+                this.debounce('timer', function () {
+                    this._doRecognition(this._inkManager.getStrokes())
+                }, this.timeout);
             }
         },
         _drawRecognitionResult: function (input, result) {
@@ -269,8 +301,8 @@ LICENSE: https://github.com/F2X/myscript-input/blob/master/LICENSE
             this._shapeRecognizer = new MyScript.ShapeRecognizer(this.url);
             this._analyzerRecognizer = new MyScript.AnalyzerRecognizer(this.url);
             this._musicRecognizer = new MyScript.MusicRecognizer(this.url);
-            // Variables
-            this.changeType(this.type);
+
+            this._typeChanged(this.type);
         }
     });
 </script>

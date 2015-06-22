@@ -3,7 +3,7 @@ Copyright © François-Xavier Gentilhomme.
 LICENSE: https://github.com/F2X/myscript-input/blob/master/LICENSE
 -->
 <link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../myscript-core/myscript-core.html">
+<link rel="import" href="../myscript/myscript.html">
 <!--
 `myscript-input` is an input element for the MyScript Cloud handwriting solution
 ##### Example
@@ -71,13 +71,28 @@ LICENSE: https://github.com/F2X/myscript-input/blob/master/LICENSE
                 observer: '_typeChanged'
             },
             /**
-             * Recognition timeout
+             * Automatic recognition (with timeout)
+             *
+             * @attribute auto
+             * @type Boolean
+             * @default false
+             */
+            auto: {
+                type: Boolean,
+                value: false,
+                notify: true
+            },
+            /**
+             * Recognition timeout (ms)
              *
              * @attribute timeout
              * @type Number
+             * @default 2000
              */
             timeout: {
-                type: Number
+                type: Number,
+                value: 2000,
+                notify: true
             },
             /**
              * MyScript Cloud host name
@@ -136,7 +151,7 @@ LICENSE: https://github.com/F2X/myscript-input/blob/master/LICENSE
                 this._selectedRenderer.drawEnd(e.detail.sourceEvent.offsetX, e.detail.sourceEvent.offsetY, this.$.canvas.getContext('2d'));
                 this._inkManager.endInkCapture(e.detail.sourceEvent.offsetX, e.detail.sourceEvent.offsetY, e.timeStamp);
                 this._isWriting = undefined;
-                if (this.timeout != null) {
+                if (this.timeout != null && this.auto) {
                     this.debounce('timer', function () {
                         this._doRecognition(this._inkManager.getStrokes())
                     }, this.timeout);
@@ -173,7 +188,7 @@ LICENSE: https://github.com/F2X/myscript-input/blob/master/LICENSE
             this._inkManager.undo();
             this._selectedRenderer.clear(this.$.canvas.getContext('2d'));
             this._selectedRenderer.drawComponents(this._inkManager.getStrokes(), this.$.canvas.getContext('2d'));
-            if (this.timeout != null) {
+            if (this.timeout != null && this.auto) {
                 this.debounce('timer', function () {
                     this._doRecognition(this._inkManager.getStrokes())
                 }, this.timeout);
@@ -195,7 +210,7 @@ LICENSE: https://github.com/F2X/myscript-input/blob/master/LICENSE
             this._inkManager.redo();
             this._selectedRenderer.clear(this.$.canvas.getContext('2d'));
             this._selectedRenderer.drawComponents(this._inkManager.getStrokes(), this.$.canvas.getContext('2d'));
-            if (this.timeout != null) {
+            if (this.timeout != null && this.auto) {
                 this.debounce('timer', function () {
                     this._doRecognition(this._inkManager.getStrokes())
                 }, this.timeout);
@@ -266,7 +281,7 @@ LICENSE: https://github.com/F2X/myscript-input/blob/master/LICENSE
                     throw new Error('Unknown type: ' + type);
             }
 
-            if (this.timeout != null) {
+            if (this.timeout != null && this.auto) {
                 this.debounce('timer', function () {
                     this._doRecognition(this._inkManager.getStrokes())
                 }, this.timeout);

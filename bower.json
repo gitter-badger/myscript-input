@@ -1,6 +1,6 @@
 {
   "name": "myscript-input",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "authors": [
     "François-Xavier Gentilhomme <gentilhomme.fx@outlook.fr>"
   ],
@@ -24,7 +24,7 @@
   ],
   "dependencies": {
     "polymer": "Polymer/polymer#1.0.x",
-    "myscript-core": "1.0.x"
+    "myscript": "1.0.x"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#1.0.x",

@@ -44,7 +44,8 @@ LICENSE: https://github.com/F2X/myscript-input/blob/master/LICENSE
             width: {
                 type: Number,
                 value: 300,
-                notify: true
+                notify: true,
+                observer: '_widthChanged'
             },
             /**
              * Input height
@@ -56,7 +57,8 @@ LICENSE: https://github.com/F2X/myscript-input/blob/master/LICENSE
             height: {
                 type: Number,
                 value: 150,
-                notify: true
+                notify: true,
+                observer: '_heightChanged'
             },
             /**
              * Recognition type
@@ -169,6 +171,7 @@ LICENSE: https://github.com/F2X/myscript-input/blob/master/LICENSE
          */
         clear: function () {
             this._instanceId = undefined;
+            this._result = undefined;
             this._selectedRenderer.clear(this.$.canvas.getContext('2d'));
             this._inkManager.clear();
         },
@@ -233,6 +236,7 @@ LICENSE: https://github.com/F2X/myscript-input/blob/master/LICENSE
                             } else if (this._instanceId !== data.getInstanceId()) {
                                 return;
                             }
+                            this._result = data;
                             this.fire('recognized', data);
                             this._selectedRenderer.clear(this.$.canvas.getContext('2d'));
                             this._drawRecognitionResult(input, data);
@@ -285,6 +289,18 @@ LICENSE: https://github.com/F2X/myscript-input/blob/master/LICENSE
                 this.debounce('timer', function () {
                     this._doRecognition(this._inkManager.getStrokes())
                 }, this.timeout);
+            }
+        },
+        _heightChanged: function (height) {
+            this._redraw();
+        },
+        _widthChanged: function (width) {
+            this._redraw();
+        },
+        _redraw: function () {
+            if (this._selectedRenderer) {
+                this._selectedRenderer.clear(this.$.canvas.getContext('2d'));
+                this._drawRecognitionResult(this._inkManager.getStrokes(), this._result);
             }
         },
         _drawRecognitionResult: function (input, result) {

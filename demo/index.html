@@ -81,7 +81,7 @@
                     document.querySelector('body').removeAttribute('unresolved');
 
                     var input = document.querySelector('myscript-input[id=input]'),
-                        error = document.querySelector('#error'),
+                        alert = document.querySelector('#error'),
                         result = document.querySelector('#result');
 
                     app.clear = function () {
@@ -98,7 +98,7 @@
                         input.recognize();
                     };
                     app.error = function error() {
-                        error.show();
+                        alert.show();
                     };
                     app.recognized = function (e) {
                         result.innerHTML = e.detail.getTextDocument().getTextSegment().getSelectedCandidate().getLabel();

@@ -4,7 +4,7 @@
   "authors": [
     "François-Xavier Gentilhomme <gentilhomme.fx@outlook.fr>"
   ],
-  "description": "Handwriting input element for the MyScript Web Components",
+  "description": "Simple handwriting input element using the MyScript Cloud recognition service",
   "keywords": [
     "web-component",
     "web-components",

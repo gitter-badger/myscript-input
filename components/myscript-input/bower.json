@@ -1,0 +1,38 @@
+{
+  "name": "myscript-input",
+  "version": "1.0.4",
+  "authors": [
+    "François-Xavier Gentilhomme <gentilhomme.fx@outlook.fr>"
+  ],
+  "description": "Handwriting input element for the MyScript Web Components",
+  "keywords": [
+    "web-component",
+    "web-components",
+    "polymer",
+    "myscript",
+    "handwriting",
+    "recognition",
+    "input"
+  ],
+  "main": "myscript-input.html",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/F2X/myscript-input/",
+  "ignore": [
+    "/.*",
+    "/test/",
+    "/demo/"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#1.0.x",
+    "myscript": "1.0.x"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#1.0.x",
+    "iron-localstorage": "PolymerElements/iron-localstorage#1.0.x",
+    "iron-icons": "polymerelements/iron-icons#1.0.x",
+    "paper-fab": "polymerelements/paper-fab#1.0.x",
+    "paper-toast": "polymerelements/paper-toast#1.0.x",
+    "paper-input": "PolymerElements/paper-input#1.0.x",
+    "web-component-tester": "*"
+  }
+}
